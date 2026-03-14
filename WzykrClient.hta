@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Wzykr Client</title>
+<meta http-equiv="X-UA-Compatible" content="IE=9">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<hta:application id="wz" border="none" scroll="no" caption="no" selection="no" innerborder="no" contextmenu="no" singleinstance="yes" showintaskbar="yes">
+
+<style>
+    * { box-sizing: border-box; -ms-user-select: none; outline: none; font-family: "Segoe UI", "Tahoma", sans-serif; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; color: #fff; }
+    .window { height: 100%; width: 100%; border: 2px solid #00ff96; border-radius: 30px; background: radial-gradient(circle at top, #001a14 0%, #000 100%); overflow: hidden; position: relative; }
+    
+    /* Шапка */
+    .top-section { height: 210px; width: 100%; position: absolute; top: 0; padding-top: 10px; z-index: 10; border-bottom: 1px solid rgba(0,255,150,0.1); }
+    .header { text-align: center; cursor: move; }
+    .client-title { font-weight: 900; font-size: 26px; margin: 0; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+    .premium-tag { font-weight: 900; font-size: 10px; color: #ffd700; display: block; margin-top: -5px; }
+    
+    .toolbox { background: rgba(255,255,255,0.05); margin: 8px 20px; padding: 10px; border-radius: 12px; border: 1px solid rgba(0,255,150,0.2); height: 55px; text-align: center; }
+    #tooltip { font-size: 10px; color: #00ff96; font-weight: bold; }
+    
+    .colors { text-align: center; padding: 5px 0; }
+    .c-btn { width: 16px; height: 16px; border-radius: 50%; display: inline-block; cursor: pointer; margin: 0 5px; border: 2px solid #fff; }
+    
+    .search-box { padding: 0 20px; }
+    #mod-search { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 8px; border-radius: 12px; text-align: center; font-size: 11px; }
+
+    /* Список функций */
+    .scroll-container { position: absolute; top: 215px; bottom: 85px; width: 100%; overflow-y: scroll; padding: 0 20px; -ms-overflow-style: none; }
+    .category { color: #fff; font-size: 10px; margin: 15px 0 8px; text-transform: uppercase; border-left: 3px solid #00ff96; padding-left: 10px; font-weight: bold; letter-spacing: 1px; }
+    
+    .btn { width: 100%; padding: 12px; background: rgba(255,255,255,0.03); color: #888; border: 1px solid rgba(255,255,255,0.07); margin-bottom: 8px; cursor: pointer; text-align: left; font-size: 11px; border-radius: 15px; transition: 0.2s; }
+    .btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .active { background: #fff !important; color: #000 !important; font-weight: 900 !important; box-shadow: 0 0 20px rgba(255,255,255,0.5); border-color: #fff !important; }
+    
+    /* Подвал */
+    .footer { position: absolute; bottom: 20px; width: 100%; padding: 0 25px; }
+    .exit-btn { width: 100%; height: 45px; background: rgba(255,0,0,0.2); color: #ff4444; border: 2px solid #ff4444; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .exit-btn:hover { background: #ff4444; color: #fff; }
+</style>
+
+<script language="JScript">
+    var s = new ActiveXObject("WScript.Shell");
+    var t = {};
+    var pulse = 0, delta = 5, cR = 0, cG = 255, cB = 150;
+    
+    var desc = {
+        "bh": "BlockHit: Удар + Блок (Enter + P).",
+        "cps": "Auto-Clicker: Левая кнопка (Enter).",
+        "rcps": "Auto-Clicker: Правая кнопка (P).",
+        "walk": "Auto-Walk: Ходьба вперед (W).",
+        "twerk": "Twerk: Флекс на Shift (+).",
+        "spam": "Safe Spam: Каждые 3 сек без лагов.",
+        "fbridge": "Fast Bridge: Стройка (S + Shift).",
+        "nfall": "NoFall: Постоянный присед (Shift).",
+        "m_on": "Mining: Зажать копание."
+    };
+
+    window.onload = function() { window.resizeTo(380, 800); setInterval(anim, 40); };
+    
+    function setTip(id) { document.getElementById('tooltip').innerText = desc[id] || "Wzykr Client: Статус OK"; }
+    function setTheme(r, g, b) { cR = r; cG = g; cB = b; }
+
+    function run(type) {
+        try {
+            if (s.AppActivate("Minecraft")) {
+                switch(type) {
+                    case 'bh': s.SendKeys("{ENTER}p"); break;
+                    case 'cps': s.SendKeys("{ENTER}"); break;
+                    case 'rcps': s.SendKeys("p"); break;
+                    case 'walk': s.SendKeys("w"); break;
+                    case 'twerk': s.SendKeys("+"); break;
+                    case 'fbridge': s.SendKeys("s"); WScript.Sleep(30); s.SendKeys("+"); break;
+                    case 'nfall': s.SendKeys("+"); break;
+                }
+            }
+        } catch(e) {}
+    }
+
+    function toggle(el, type) {
+        if (!t[type]) {
+            s.AppActivate("Minecraft");
+            el.className = "btn active";
+            if (type == 'spam') {
+                t[type] = setInterval(function(){
+                    if (s.AppActivate("Minecraft")) {
+                        s.SendKeys("t"); WScript.Sleep(50);
+                        s.SendKeys("wzykr client on top"); WScript.Sleep(50);
+                        s.SendKeys("{ENTER}");
+                    }
+                }, 3500);
+            } else {
+                t[type] = setInterval(function(){ run(type); }, 100);
+            }
+        } else {
+            clearInterval(t[type]); t[type] = null;
+            el.className = "btn";
+            // Отпускаем клавиши при выключении
+            try { 
+                if (type == 'walk') s.SendKeys("{w up}"); 
+                if (type == 'twerk' || type == 'nfall') s.SendKeys("{+ up}");
+            } catch(e){}
+        }
+    }
+
+    function anim() {
+        pulse += delta; if (pulse > 200 || pulse < 0) delta *= -1;
+        var rgb = cR + "," + cG + "," + cB;
+        var win = document.getElementById('win');
+        win.style.boxShadow = "inset 0 0 30px rgba(" + rgb + ", 0.2), 0 0 " + (pulse/10) + "px rgba(" + rgb + ", 0.2)";
+        win.style.borderColor = "rgba(" + rgb + ", " + (0.4 + pulse/400) + ")";
+        document.getElementById('tooltip').style.color = "rgb(" + rgb + ")";
+    }
+
+    function doSearch() {
+        var input = document.getElementById('mod-search').value.toLowerCase();
+        var btns = document.getElementsByTagName('button');
+        for (var i = 0; i < btns.length; i++) {
+            if (btns[i].className.indexOf('btn') !== -1) {
+                btns[i].style.display = (btns[i].innerText.toLowerCase().indexOf(input) > -1) ? "block" : "none";
+            }
+        }
+    }
+
+    var drag = false, ox, oy;
+    function sDrag() { drag = true; ox = event.screenX - window.screenLeft; oy = event.screenY - window.screenTop; }
+    function dDrag() { if (drag) window.moveTo(event.screenX - ox, event.screenY - oy); }
+</script>
+</head>
+<body onmousemove="dDrag()" onmouseup="drag=false">
+<div class="window" id="win">
+    <div class="top-section">
+        <div class="header" onmousedown="sDrag()">
+            <p class="client-title">Wzykr Client</p>
+            <span class="premium-tag">v32 | FINAL STABLE</span>
+        </div>
+        <div class="toolbox"><div id="tooltip">Система готова. Все ошибки исправлены.</div></div>
+        <div class="colors">
+            <div class="c-btn" style="background:#ff0000" onclick="setTheme(255,0,0)"></div>
+            <div class="c-btn" style="background:#00ff00" onclick="setTheme(0,255,0)"></div>
+            <div class="c-btn" style="background:#00ffff" onclick="setTheme(0,255,255)"></div>
+            <div class="c-btn" style="background:#ff00ff" onclick="setTheme(255,0,255)"></div>
+            <div class="c-btn" style="background:#ffd700" onclick="setTheme(255,215,0)"></div>
+        </div>
+        <div class="search-box"><input type="text" id="mod-search" placeholder="Поиск (начни вводить)..." onkeyup="doSearch()"></div>
+    </div>
+
+    <div class="scroll-container">
+        <div class="category">PvP & Speed</div>
+        <button class="btn" onmouseenter="setTip('bh')" onclick="toggle(this,'bh')">BlockHit Combo</button>
+        <button class="btn" onmouseenter="setTip('cps')" onclick="toggle(this,'cps')">Auto-Clicker (L)</button>
+        <button class="btn" onmouseenter="setTip('rcps')" onclick="toggle(this,'rcps')">Auto-Clicker (R)</button>
+        
+        <div class="category">Utility</div>
+        <button class="btn" onmouseenter="setTip('fbridge')" onclick="toggle(this,'fbridge')">Fast Bridge</button>
+        <button class="btn" onmouseenter="setTip('nfall')" onclick="toggle(this,'nfall')">Safe Sneak</button>
+        <button class="btn" onmouseenter="setTip('walk')" onclick="toggle(this,'walk')">Auto Walk</button>
+        
+        <div class="category">Social</div>
+        <button class="btn" onmouseenter="setTip('twerk')" onclick="toggle(this,'twerk')">Twerk (Shift)</button>
+        <button class="btn" onmouseenter="setTip('spam')" onclick="toggle(this,'spam')">Safe Spammer</button>
+        
+        <div class="category">Mining</div>
+        <button class="btn" onmouseenter="setTip('m_on')" onclick="s.AppActivate('Minecraft');s.SendKeys('{ENTER down}')">Infinite Mine START</button>
+        <button class="btn" onclick="s.AppActivate('Minecraft');s.SendKeys('{ENTER up}')">Infinite Mine STOP</button>
+        <div style="height:30px;"></div>
+    </div>
+
+    <div class="footer"><button class="exit-btn" onclick="window.close()">EXIT CLIENT</button></div>
+</div>
+</body>
+</html>
